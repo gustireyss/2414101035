@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Rey's Vegetables - Pemesanan & Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css" /> 
+</head>
+<body>
+
+    <div id="customer-view" class="customer-view">
+        <header>
+            <div class="wrap">
+                <div class="brand">
+                    <div><img src="Presiden Konoha.jpg" alt="logo Profile" class="logo-img" /></div>
+                    <div>
+                        <h1>Rey's Vegetables</h1>
+                        <div class="subtitle">Pasar Cigasong Majalengka</div>
+                        <div class="subtitle">081312545499 (Gusti Reyhans)</div>
+                    </div>
+                </div>
+                <div id="auth-area">
+                    </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="grid">
+                <section class="card">
+                    <h2>Pilih Sayuran Segar Anda</h2>
+                    <p class="meta">Pesan sekarang, kami antar sampai ke rumah! Harga per satuan.</p>
+
+                    <div class="products" role="list" id="customer-products">
+                        </div>
+                </section>
+
+                <aside class="card">
+                    <h2>Keranjang Belanja</h2>
+                    <div class="cart-items">
+                        <div class="cart-empty" id="cart-empty-message">Keranjang Anda masih kosong. Yuk, pilih sayuran segar!</div>
+                        </div>
+
+                    <div class="total">
+                        <div class="total-row">
+                            <div>Subtotal</div>
+                            <div id="subtotal">Rp 0</div>
+                        </div>
+                        <div class="total-row">
+                            <div class="subtitle">Biaya Pengiriman (COD)</div>
+                            <div class="subtitle">Dihitung saat konfirmasi</div>
+                        </div>
+                        <div class="total-row">
+                            <div>Total Estimasi</div>
+                            <div id="grand-total">Rp 0</div>
+                        </div>
+                    </div>
+
+                    <form class="checkout" aria-label="Form Pemesanan" id="checkout-form">
+                        <p style="font-size:14px; font-weight:600; margin-bottom:0;">Data Pengiriman</p>
+                        <input type="text" id="input-name" placeholder="Nama lengkap" required />
+                        <input type="tel" id="input-phone" placeholder="Nomor HP (WhatsApp)" required />
+                        <textarea id="input-address" placeholder="Alamat pengantaran lengkap" rows="3" required></textarea>
+                        
+                        <select id="input-payment-method">
+                            <option value="COD">Bayar di Tempat (COD)</option>
+                            <option value="Transfer">Transfer Bank (Konfirmasi via WA)</option>
+                        </select>
+                        <button type="submit" class="full-cust" id="checkout-button" disabled>Buat Pemesanan (Rp 0)</button>
+                    </form>
+
+                    <p style="color:red; font-size:12px; margin-top:15px; text-align:center;">
+                        PERHATIAN: Pemesanan akan dikirim ke WhatsApp kami. Pastikan data Anda benar!
+                    </p>
+                </aside>
+            </div>
+        </main>
+    </div>
+    
+    <div id="admin-view" class="admin-view">
+        <header>
+            <div class="wrap">
+                <div class="brand">
+                    <div class="logo"><img src="Presiden Konoha.jpg" alt="logo profile" class="logo-img" /></div>
+                    <div>
+                        <h1>Dashboard Admin</h1>
+                        <div class="subtitle">Rey's Vegetables - Manajemen Produk & Pesanan</div>
+                        <div class="subtitle">Admin: Gusti Reyhans | 081312545499</div>
+                    </div>
+                </div>
+                <div>
+                    <button class="logout-btn" onclick="adminLogout()">LOGOUT</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="grid">
+                <section class="card">
+                    <h2>Manajemen Produk</h2>
+                    <p class="meta" style="color: var(--muted-admin);">Atur stok, harga, dan ketersediaan sayuran di sini.</p>
+
+                    <div class="products" role="list" id="admin-products">
+                        </div>
+
+                    <div style="text-align:center; margin-top:25px;">
+                        <button class="btn-admin add" onclick="addProduct()">➕ Tambah Produk Baru</button>
+                    </div>
+                </section>
+
+                <aside class="card" style="background: #fefefe;">
+                    <h2 style="color: var(--primary-admin);">Daftar Pesanan Masuk (5)</h2>
+                    <p class="meta" style="color: var(--muted-admin); margin-bottom: 15px;">Kelola pesanan yang telah dikirim oleh pelanggan.</p>
+                    
+                    <div class="order-list">
+                        <div class="order-item" data-id="4" data-status="Baru">
+                            <div class="order-header">
+                                <span class="order-id">#ORD-004D</span>
+                                <span class="order-status status-baru">BARU</span>
+                            </div>
+                            <div class="customer-info">
+                                <strong>Nama: Yanto oli samping</strong>
+                                <small>No. HP: 085234567890</small>
+                                <small>Alamat: Jalan Jend. Sudirman No. 12, Samping Indomaret</small>
+                            </div>
+                            <div class="order-details">
+                                <ul>
+                                    <li>2x Bayam (@5.000)</li>
+                                    <li>4x Tempe (@6.000)</li>
+                                </ul>
+                            </div>
+                            <div class="order-total">Total: Rp 34.000 (COD)</div>
+                            <div class="order-actions">
+                                <button class="btn-admin" style="background: var(--primary-admin);" onclick="updateOrderStatus(4, 'Proses')">Proses</button>
+                                <button class="btn-admin delete" onclick="deleteOrder(4)">Hapus</button>
+                            </div>
+                        </div>
+                        
+                        <div class="order-item" data-id="1" data-status="Baru">
+                            <div class="order-header">
+                                <span class="order-id">#ORD-001A</span>
+                                <span class="order-status status-baru">BARU</span>
+                            </div>
+                            <div class="customer-info">
+                                <strong>Nama: Ayi Beutik</strong>
+                                <small>Alamat: Jl. Anggrek No. 5, Cigasong</small>
+                            </div>
+                            <div class="order-details">
+                                <ul>
+                                    <li>3x Bayam (@5.000)</li>
+                                    <li>2x Wortel (@8.000)</li>
+                                </ul>
+                            </div>
+                            <div class="order-total">Total: Rp 31.000 (COD)</div>
+                            <div class="order-actions">
+                                <button class="btn-admin" style="background: var(--primary-admin);" onclick="updateOrderStatus(1, 'Proses')">Proses</button>
+                                <button class="btn-admin delete" onclick="deleteOrder(1)">Hapus</button>
+                            </div>
+                        </div>
+
+                        <div class="order-item" data-id="2" data-status="Proses">
+                            <div class="order-header">
+                                <span class="order-id">#ORD-002B</span>
+                                <span class="order-status status-proses">DIPROSES</span>
+                            </div>
+                            <div class="customer-info">
+                                <strong>Nama: omon steam</strong>
+                                <small>Alamat: Perumahan Indah Blok C10, Majalengka Kota</small>
+                            </div>
+                            <div class="order-details">
+                                <ul>
+                                    <li>5x Kangkung (@4.500)</li>
+                                </ul>
+                            </div>
+                            <div class="order-total">Total: Rp 22.500 (Transfer)</div>
+                            <div class="order-actions">
+                                <button class="btn-admin" style="background: var(--accent-admin);" onclick="updateOrderStatus(2, 'Selesai')">Selesai</button>
+                                <button class="btn-admin delete" onclick="deleteOrder(2)">Hapus</button>
+                            </div>
+                        </div>
+                        
+                        <div class="order-item" data-id="3" data-status="Selesai">
+                            <div class="order-header">
+                                <span class="order-id">#ORD-003C</span>
+                                <span class="order-status status-selesai">SELESAI</span>
+                            </div>
+                            <div class="customer-info">
+                                <strong>Nama: Dani kusen</strong>
+                                <small>Alamat: Desa Cibodas, dekat pos ronda</small>
+                            </div>
+                            <div class="order-details">
+                                <ul>
+                                    <li>2x Tempe (@6.000)</li>
+                                    <li>1x Bayam (@5.000)</li>
+                                </ul>
+                            </div>
+                            <div class="order-total">Total: Rp 17.000 (COD)</div>
+                            <div class="order-actions">
+                                <button class="btn-admin" style="background: var(--primary-admin);" disabled>Selesai</button>
+                                <button class="btn-admin delete" onclick="deleteOrder(3)">Hapus</button>
+                            </div>
+                        </div>
+                        
+                        <div class="order-item" data-id="5" data-status="Baru">
+                            <div class="order-header">
+                                <span class="order-id">#ORD-005E</span>
+                                <span class="order-status status-baru">BARU</span>
+                            </div>
+                            <div class="customer-info">
+                                <strong>Nama: Susi Parabot</strong>
+                                <small>No. HP: 081211223344</small>
+                                <small>Alamat: Blok A5, Dekat Alun-alun</small>
+                            </div>
+                            <div class="order-details">
+                                <ul>
+                                    <li>1x Kol (@3.000)</li>
+                                </ul>
+                            </div>
+                            <div class="order-total">Total: Rp 3.000 (COD)</div>
+                            <div class="order-actions">
+                                <button class="btn-admin" style="background: var(--primary-admin);" onclick="updateOrderStatus(5, 'Proses')">Proses</button>
+                                <button class="btn-admin delete" onclick="deleteOrder(5)">Hapus</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </aside>
+            </div>
+        </main>
+    </div>
+    
+    <footer>
+        <div id="footer-text"></div>
+    </footer>
+
+    <script src="script.js"></script> 
+</body>
+</html>

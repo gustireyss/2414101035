@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Rey's Vegetables - Pemesanan & Admin Dashboard</title>
+    <style>
+        :root{
+            /* CUSTOMER COLORS */
+            --bg-cust:#f4f1f1; --card-cust:#304dc2; 
+            --accent-cust:#6ce82e; 
+            --primary-cust:#304dc2; 
+            --muted-cust:#000206; 
+
+            /* ADMIN COLORS (Hampir Sama dengan Customer) */
+            --bg-admin:#f2f3f8;
+            --primary-admin:#304dc2; 
+            --accent-admin:#6ce82e; 
+            --warning-admin:#ee1313; 
+            --muted-admin:#f5f7fb;
+            
+            --maxw:1100px; --radius:12px;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#0f172a;}
+
+        /* --- GLOBAL STYLES --- */
+        .wrap{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+        .brand{display:flex;align-items:center;gap:12px}
+        .logo-img{width:90px; height: auto;}
+        .subtitle{font-size:14px}
+        main{max-width:var(--maxw);margin:24px auto;padding:0 16px}
+        .grid{display:grid;gap:20px;align-items:start;}
+        .card{border-radius:var(--radius);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+        .meta{font-size:14px;}
+
+        /* --- CUSTOMER VIEW (VIEW MODE 1) --- */
+        .customer-view{background:var(--bg-cust); color: #f8f4f4;}
+        .customer-view header{background:linear-gradient(90deg,var(--primary-cust),#4a99ed);padding:20px 16px;border-bottom:1px solid var(--primary-cust); color: #ffffff;}
+        .customer-view .card{background:var(--card-cust);}
+        .customer-view .grid{grid-template-columns:1fr 360px;}
+        .customer-view h1{font-size:24px;margin:0;color:#000000}
+        .customer-view .subtitle{color:#000000;}
+        .customer-view .product{display:flex;gap:16px;align-items:center;padding:15px;border-radius:12px;border:1px solid #eef3f0;background:#fff;box-shadow:0 4px 6px rgba(0,0,0,0.05);}
+        .customer-view .thumb img{width:80px;height:80px;border-radius:10px;object-fit:cover;border:1px solid #eee;}
+        .customer-view .pinfo h3{margin:0 0 4px 0;font-size:18px}
+        .customer-view .meta{color:var(--muted-cust);}
+        .customer-view .price{font-weight:700;color:var(--primary-cust);margin-top:4px;}
+        .customer-view .btn-cust{border:none;padding:10px 15px;border-radius:8px;background:var(--accent-cust);color:#0f172a;font-weight:600;cursor:pointer;transition:background 0.2s;}
+        .customer-view .btn-cust:hover{background:#5acb21;}
+        .customer-view .qty-btn{background:var(--primary-cust);color:#fff;border:none;width:24px;height:24px;border-radius:4px;cursor:pointer;}
+        .customer-view .qty-btn.remove{background:#ef4444;}
+        .customer-view button.full-cust{background:var(--accent-cust);color:#30b013;}
+        .customer-view .admin-link{color:#3ed718;text-decoration:none;font-weight:600;font-size:14px; padding: 8px 12px; border: 1px solid #4ce610; border-radius: 6px; transition: background 0.3s; display: inline-block; cursor: pointer;}
+        .customer-view .admin-link:hover{background: rgba(9, 0, 0, 0.1);}
+
+
+        /* --- ADMIN VIEW (VIEW MODE 2) --- */
+        .admin-view{background:var(--bg-admin); display: none;} /* Default hidden */
+        .admin-view header{background:linear-gradient(90deg,var(--primary-admin),#4a99ed);padding:20px 16px;border-bottom:1px solid var(--primary-admin); color: white;}
+        .admin-view .card{background:var(--card-cust); color: #0f172a;}
+        .admin-view .grid{grid-template-columns:1fr 400px;}
+        .admin-view h1{font-size:24px;margin:0; color: #fff;}
+        .admin-view .subtitle{color:#000000;}
+        .admin-view .product{background:#fff;box-shadow:0 2px 5px rgba(0,0,0,0.03)}
+        .admin-view .btn-admin{border:none;padding:8px 12px;border-radius:6px;background:var(--primary-admin);color:#fff;cursor:pointer;font-size:12px;}
+        .admin-view .btn-admin.delete{background:var(--warning-admin); color: #fff;}
+        .admin-view .btn-admin.add{background:var(--accent-admin); color: #0f172a; font-weight: 600;}
+
+        /* Admin Orders Styles */
+        .order-list{display:flex; flex-direction: column; gap: 15px;}
+        .order-item{background:#f8f9fa; border: 1px solid #e2e8f0; border-radius: var(--radius); padding: 15px; position: relative;}
+        .order-header{display: flex; justify-content: space-between; margin-bottom: 8px;}
+        .order-id{font-size: 14px; font-weight: 700; color: var(--primary-admin);}
+        .order-status{font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px; color: rgb(0, 0, 0);}
+        .status-baru{background: #ef4444;}
+        .status-proses{background: #f59e0b;}
+        .status-selesai{background: var(--accent-admin);}
+        .customer-info strong{display: block; font-size: 14px; margin-top: 4px;}
+        .customer-info small{color: var(--muted-admin); display: block; margin-bottom: 8px;}
+        .order-details ul{list-style: none; padding: 0; margin: 8px 0;}
+        .order-details li{font-size: 13px; margin-bottom: 2px;}
+        .order-total{font-weight: 700; font-size: 16px; margin-top: 10px; padding-top: 5px; border-top: 1px dashed #ccc;}
+        .order-actions{display: flex; gap: 8px; margin-top: 12px;}
+        .admin-view .logout-btn{background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;}
+
+        footer{max-width:var(--maxw);margin:28px auto;text-align:center;color:#555;font-size:13px;padding:6px}
+
+        /* Responsive */
+        @media (max-width:980px){
+            .customer-view .grid{grid-template-columns:1fr;}
+            .customer-view aside{order:-1;}
+            .admin-view .grid{grid-template-columns:1fr;}
+            .products{grid-template-columns:repeat(auto-fit, minmax(100%, 1fr))!important;}
+        }
+    </style>
+</head>
+<body>
+
+    <div id="customer-view" class="customer-view">
+        <header>
+            <div class="wrap">
+                <div class="brand">
+                    <div><img src="Presiden Konoha.jpg" alt="logo Profile" class="logo-img" /></div>
+                    <div>
+                        <h1>Rey's Vegetables</h1>
+                        <div class="subtitle">Pasar Cigasong Majalengka</div>
+                        <div class="subtitle">081312545499 (Gusti Reyhans)</div>
+                    </div>
+                </div>
+                <div id="auth-area">
+                    </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="grid">
+                <section class="card">
+                    <h2>Pilih Sayuran Segar Anda</h2>
+                    <p class="meta">Pesan sekarang, kami antar sampai ke rumah! Harga per satuan.</p>
+
+                    <div class="products" role="list" id="customer-products">
+                        </div>
+                </section>
+
+                <aside class="card">
+                    <h2>Keranjang Belanja</h2>
+                    <div class="cart-items">
+                        <div class="cart-empty" id="cart-empty-message">Keranjang Anda masih kosong. Yuk, pilih sayuran segar!</div>
+                    </div>
+
+                    <div class="total">
+                        <div class="total-row">
+                            <div>Subtotal</div>
+                            <div id="subtotal">Rp 0</div>
+                        </div>
+                        <div class="total-row">
+                            <div class="subtitle">Biaya Pengiriman (COD)</div>
+                            <div class="subtitle">Dihitung saat konfirmasi</div>
+                        </div>
+                        <div class="total-row">
+                            <div>Total Estimasi</div>
+                            <div id="grand-total">Rp 0</div>
+                        </div>
+                    </div>
+
+                    <form class="checkout" aria-label="Form Pemesanan" id="checkout-form">
+                        <p style="font-size:14px; font-weight:600; margin-bottom:0;">Data Pengiriman</p>
+                        <input type="text" id="input-name" placeholder="Nama lengkap" required />
+                        <input type="tel" id="input-phone" placeholder="Nomor HP (WhatsApp)" required />
+                        <textarea id="input-address" placeholder="Alamat pengantaran lengkap" rows="3" required></textarea>
+                        
+                        <select id="input-payment-method">
+                            <option value="COD">Bayar di Tempat (COD)</option>
+                            <option value="Transfer">Transfer Bank (Konfirmasi via WA)</option>
+                        </select>
+                        <button type="submit" class="full-cust" id="checkout-button" disabled>Buat Pemesanan (Rp 0)</button>
+                    </form>
+
+                    <p style="color:red; font-size:12px; margin-top:15px; text-align:center;">
+                        PERHATIAN: Pemesanan akan dikirim ke WhatsApp kami. Pastikan data Anda benar!
+                    </p>
+                </aside>
+            </div>
+        </main>
+    </div>
+    <div id="admin-view" class="admin-view">
+        <header>
+            <div class="wrap">
+                <div class="brand">
+                    <div class="logo"><img src="Presiden Konoha.jpg" alt="logo profile" class="logo-img" /></div>
+                    <div>
+                        <h1>Dashboard Admin</h1>
+                        <div class="subtitle">Rey's Vegetables - Manajemen Produk & Pesanan</div>
+                        <div class="subtitle">Admin: Gusti Reyhans | 081312545499</div>
+                    </div>
+                </div>
+                <div>
+                    <button class="logout-btn" onclick="adminLogout()">LOGOUT</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="grid">
+                <section class="card">
+                    <h2>Manajemen Produk</h2>
+                    <p class="meta" style="color: var(--muted-admin);">Atur stok, harga, dan ketersediaan sayuran di sini.</p>
+
+                    <div class="products" role="list" id="admin-products">
+                        </div>
+
+                    <div style="text-align:center; margin-top:25px;">
+                        <button class="btn-admin add" onclick="addProduct()">➕ Tambah Produk Baru</button>
+                    </div>
+                </section>
+
+                <aside class="card" style="background: #fefefe;">
+                    <h2 style="color: var(--primary-admin);">Daftar Pesanan Masuk (5)</h2>
+                    <p class="meta" style="color: var(--muted-admin); margin-bottom: 15px;">Kelola pesanan yang telah dikirim oleh pelanggan.</p>
+                    
+                    <div class="order-list">
+
+                        <div class="order-item" data-id="4" data-status="Baru">
+                            <div class="order-header">
+                                <span class="order-id">#ORD-004D</span>
+                                <span class="order-status status-baru">BARU</span>
+                            </div>
+                            <div class="customer-info">
+                                <strong>Nama: Yanto oli samping</strong>
+                                <small>No. HP: 085234567890</small>
+                                <small>Alamat: Jalan Jend. Sudirman No. 12, Samping Indomaret</small>
+                            </div>
+                            <div class="order-details">
+                                <ul>
+                                    <li>2x Bayam (@5.000)</li>
+                                    <li>4x Tempe (@6.000)</li>
+                                </ul>
+                            </div>
+                            <div class="order-total">Total: Rp 34.000 (COD)</div>
+                            <div class="order-actions">
+                                <button class="btn-admin" style="background: var(--primary-admin);" onclick="updateOrderStatus(4, 'Proses')">Proses</button>
+                                <button class="btn-admin delete" onclick="deleteOrder(4)">Hapus</button>
+                            </div>
+                        </div>
+                        
+                        <div class="order-item" data-id="1" data-status="Baru">
+                            <div class="order-header">
+                                <span class="order-id">#ORD-001A</span>
+                                <span class="order-status status-baru">BARU</span>
+                            </div>
+                            <div class="customer-info">
+                                <strong>Nama: Ayi Beutik</strong>
+                                <small>Alamat: Jl. Anggrek No. 5, Cigasong</small>
+                            </div>
+                            <div class="order-details">
+                                <ul>
+                                    <li>3x Bayam (@5.000)</li>
+                                    <li>2x Wortel (@8.000)</li>
+                                </ul>
+                            </div>
+                            <div class="order-total">Total: Rp 31.000 (COD)</div>
+                            <div class="order-actions">
+                                <button class="btn-admin" style="background: var(--primary-admin);" onclick="updateOrderStatus(1, 'Proses')">Proses</button>
+                                <button class="btn-admin delete" onclick="deleteOrder(1)">Hapus</button>
+                            </div>
+                        </div>
+
+                        <div class="order-item" data-id="2" data-status="Proses">
+                            <div class="order-header">
+                                <span class="order-id">#ORD-002B</span>
+                                <span class="order-status status-proses">DIPROSES</span>
+                            </div>
+                            <div class="customer-info">
+                                <strong>Nama: omon steam</strong>
+                                <small>Alamat: Perumahan Indah Blok C10, Majalengka Kota</small>
+                            </div>
+                            <div class="order-details">
+                                <ul>
+                                    <li>5x Kangkung (@4.500)</li>
+                                </ul>
+                            </div>
+                            <div class="order-total">Total: Rp 22.500 (Transfer)</div>
+                            <div class="order-actions">
+                                <button class="btn-admin" style="background: var(--accent-admin);" onclick="updateOrderStatus(2, 'Selesai')">Selesai</button>
+                                <button class="btn-admin delete" onclick="deleteOrder(2)">Hapus</button>
+                            </div>
+                        </div>
+                        
+                        <div class="order-item" data-id="3" data-status="Selesai">
+                            <div class="order-header">
+                                <span class="order-id">#ORD-003C</span>
+                                <span class="order-status status-selesai">SELESAI</span>
+                            </div>
+                            <div class="customer-info">
+                                <strong>Nama: Dani kusen</strong>
+                                <small>Alamat: Desa Cibodas, dekat pos ronda</small>
+                            </div>
+                            <div class="order-details">
+                                <ul>
+                                    <li>2x Tempe (@6.000)</li>
+                                    <li>1x Bayam (@5.000)</li>
+                                </ul>
+                            </div>
+                            <div class="order-total">Total: Rp 17.000 (COD)</div>
+                            <div class="order-actions">
+                                <button class="btn-admin" style="background: var(--primary-admin);" disabled>Selesai</button>
+                                <button class="btn-admin delete" onclick="deleteOrder(3)">Hapus</button>
+                            </div>
+                        </div>
+                        
+                        <div class="order-item" data-id="5" data-status="Baru">
+                            <div class="order-header">
+                                <span class="order-id">#ORD-005E</span>
+                                <span class="order-status status-baru">BARU</span>
+                            </div>
+                            <div class="customer-info">
+                                <strong>Nama: Susi Parabot</strong>
+                                <small>No. HP: 081211223344</small>
+                                <small>Alamat: Blok A5, Dekat Alun-alun</small>
+                            </div>
+                            <div class="order-details">
+                                <ul>
+                                    <li>1x Kol (@3.000)</li>
+                                </ul>
+                            </div>
+                            <div class="order-total">Total: Rp 3.000 (COD)</div>
+                            <div class="order-actions">
+                                <button class="btn-admin" style="background: var(--primary-admin);" onclick="updateOrderStatus(5, 'Proses')">Proses</button>
+                                <button class="btn-admin delete" onclick="deleteOrder(5)">Hapus</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </aside>
+            </div>
+        </main>
+    </div>
+    <footer>
+        <div id="footer-text"></div>
+    </footer>
+
+    <script>
+        // --- GLOBAL VARIABLES & DATA (SHARED) ---
+        const CUSTOMER_VIEW_ID = 'customer-view';
+        const ADMIN_VIEW_ID = 'admin-view';
+        const AUTH_AREA_ID = 'auth-area';
+        const ADMIN_PASSWORD = "admin"; // **PASSWORD ADMIN**
+        const customerView = document.getElementById(CUSTOMER_VIEW_ID);
+        const adminView = document.getElementById(ADMIN_VIEW_ID);
+        const authArea = document.getElementById(AUTH_AREA_ID);
+        const footerText = document.getElementById('footer-text');
+
+
+        // Data Produk (Menggunakan LocalStorage agar data produk persisten)
+        let products = JSON.parse(localStorage.getItem("products")) || [
+            { id: 1, name: "Bayam", price: 5000, stock: 50, unit: "ikat", image: "https://pasarsegar.co.id/wp-content/uploads/2020/12/name-222-1.jpg" },
+            { id: 2, name: "Kangkung", price: 4500, stock: 40, unit: "ikat", image: "https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full//96/MTA-10783157/hypermart_daun-kangkung-ikat-150-gr_full01.jpg" },
+            { id: 3, name: "Wortel", price: 8000, stock: 30, unit: "kg", image: "https://balifoodstore.com/10-large_default/wortel-500gr.jpg" },
+            { id: 4, name: "Tempe", price: 6000, stock: 30, unit: "bungkus", image: "https://i0.wp.com/halalmui.org/wp-content/uploads/2022/07/Fermentasi_Media_Padat_dari_Tempe_sampai_Enzim_11zon.jpg?w=1000&ssl=1" },
+            { id: 5, name: "Kol", price: 3000, stock: 33, unit: "kg", image: "https://tse1.mm.bing.net/th?q=manfaat%20sayur%20kol%20mentah" },
+        ];
+        
+        // Keranjang Belanja (Customer)
+        let cart = JSON.parse(sessionStorage.getItem("customer_cart")) || [];
+
+
+        // --- VIEW MANAGEMENT & AUTH ---
+
+        function setView(viewMode) {
+            if (viewMode === 'admin') {
+                customerView.style.display = 'none';
+                adminView.style.display = 'block';
+                footerText.textContent = '© "Admin Panel" | Dibuat untuk manajemen Rey\'s Vegetables.';
+                renderAdminProducts();
+            } else { // 'customer'
+                customerView.style.display = 'block';
+                adminView.style.display = 'none';
+                footerText.textContent = '© "Hidup sehat dimulai dari makanan sehat, dan sayur adalah salah satunya".';
+                renderCustomerProducts();
+                renderCart();
+            }
+        }
+
+        function checkAdminLogin() {
+            const password = prompt("Masukkan password Admin:");
+            if (password === ADMIN_PASSWORD) {
+                sessionStorage.setItem("isAdminLoggedIn", "true");
+                renderAuthButton();
+                setView('admin');
+            } else if (password !== null) {
+                alert("Password salah.");
+            }
+        }
+
+        window.adminLogout = function() {
+            sessionStorage.removeItem("isAdminLoggedIn");
+            alert("Anda telah berhasil Logout.");
+            renderAuthButton();
+            setView('customer');
+        }
+
+        function renderAuthButton() {
+            if (sessionStorage.getItem("isAdminLoggedIn") === "true") {
+                authArea.innerHTML = `
+                    <button class="admin-link admin-btn-style" onclick="setView('admin')">Dashboard Admin 📊</button>
+                `;
+            } else {
+                authArea.innerHTML = `
+                    <button class="admin-link" onclick="checkAdminLogin()">Admin Login</button>
+                `;
+            }
+        }
+
+
+        // --- CUSTOMER FUNCTIONS ---
+
+        const customerProductList = document.getElementById("customer-products");
+        const cartItemsContainer = document.querySelector(".cart-items");
+        const subtotalElement = document.getElementById("subtotal");
+        const grandTotalElement = document.getElementById("grand-total");
+        const cartEmptyMessage = document.getElementById("cart-empty-message");
+        const checkoutButton = document.getElementById("checkout-button");
+        const checkoutForm = document.getElementById("checkout-form");
+
+        function saveCart() {
+            sessionStorage.setItem("customer_cart", JSON.stringify(cart));
+        }
+        
+        window.renderCustomerProducts = function() {
+            customerProductList.innerHTML = "";
+            products.forEach((p) => {
+                const item = document.createElement("article");
+                item.classList.add("product");
+                item.innerHTML = `
+                    <div class="thumb">
+                        <img src="${p.image}" alt="${p.name}">
+                    </div>
+                    <div class="pinfo">
+                        <h3>${p.name}</h3>
+                        <div class="meta">Stok: ${p.stock > 0 ? p.stock + ' ' + p.unit : 'Habis'}</div>
+                        <div class="price">Rp ${p.price.toLocaleString('id-ID')} / ${p.unit}</div>
+                        <div class="paction">
+                            <button class="btn-cust" ${p.stock === 0 ? 'disabled' : ''} onclick="addToCart(${p.id})">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+                `;
+                customerProductList.appendChild(item);
+            });
+        }
+
+        window.addToCart = function(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product || product.stock <= 0) {
+                alert("Stok produk ini sedang kosong!");
+                return;
+            }
+            const cartItem = cart.find(item => item.id === productId);
+            if (cartItem) {
+                if (cartItem.qty < product.stock) {
+                    cartItem.qty++;
+                } else {
+                    alert(`Stok maksimal untuk ${product.name} adalah ${product.stock} ${product.unit}.`);
+                }
+            } else {
+                cart.push({ id: product.id, name: product.name, price: product.price, unit: product.unit, qty: 1 });
+            }
+            saveCart();
+            renderCart();
+        }
+
+        window.updateCartQty = function(productId, change) {
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
+            if (!cartItem) return;
+            cartItem.qty += change;
+            if (cartItem.qty > product.stock) {
+                cartItem.qty = product.stock;
+                alert(`Stok maksimal untuk ${product.name} adalah ${product.stock} ${product.unit}.`);
+            } else if (cartItem.qty <= 0) {
+                cart = cart.filter(item => item.id !== productId);
+            }
+            saveCart();
+            renderCart();
+        }
+
+        window.renderCart = function() {
+            cartItemsContainer.innerHTML = "";
+            let subtotal = 0;
+
+            if (cart.length === 0) {
+                cartEmptyMessage.style.display = 'block';
+                checkoutButton.disabled = true;
+                checkoutButton.textContent = `Buat Pemesanan (Rp 0)`;
+            } else {
+                cartEmptyMessage.style.display = 'none';
+                checkoutButton.disabled = false;
+            }
+
+            cart.forEach((item) => {
+                const totalItemPrice = item.price * item.qty;
+                subtotal += totalItemPrice;
+                const itemDiv = document.createElement("div");
+                itemDiv.classList.add("cart-item");
+                itemDiv.innerHTML = `
+                    <div class="item-info">
+                        <strong>${item.name}</strong>
+                        <small>Rp ${item.price.toLocaleString('id-ID')} / ${item.unit}</small>
+                        <small>Total: Rp ${totalItemPrice.toLocaleString('id-ID')}</small>
+                    </div>
+                    <div class="item-qty">
+                        <button class="qty-btn remove" onclick="updateCartQty(${item.id}, -1)">-</button>
+                        <span>${item.qty} ${item.unit}</span>
+                        <button class="qty-btn" onclick="updateCartQty(${item.id}, 1)">+</button>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(itemDiv);
+            });
+
+            subtotalElement.textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
+            grandTotalElement.textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
+            checkoutButton.textContent = `Buat Pemesanan (Rp ${subtotal.toLocaleString('id-ID')})`;
+        }
+
+        checkoutForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (cart.length === 0) {
+                alert("Keranjang belanja Anda kosong!");
+                return;
+            }
+            const name = document.getElementById('input-name').value.trim();
+            const phone = document.getElementById('input-phone').value.trim();
+            const address = document.getElementById('input-address').value.trim();
+            const paymentMethod = document.getElementById('input-payment-method').value;
+
+            if (!name || !phone || !address) {
+                alert("Mohon lengkapi semua data pemesanan: Nama, Nomor HP, dan Alamat.");
+                return;
+            }
+
+            let orderDetails = "Halo Rey's Vegetables, saya ingin memesan:\n\n";
+            let totalOrder = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.qty;
+                totalOrder += itemTotal;
+                orderDetails += `- *${item.name}*: ${item.qty} ${item.unit} (Rp ${itemTotal.toLocaleString('id-ID')})\n`;
+            });
+
+            orderDetails += `\n*TOTAL PESANAN:* Rp ${totalOrder.toLocaleString('id-ID')}`;
+            orderDetails += `\n\n*DATA PENGIRIMAN:*\n`;
+            orderDetails += `Nama: ${name}\n`;
+            orderDetails += `HP: ${phone}\n`;
+            orderDetails += `Alamat: ${address}\n`;
+            orderDetails += `Metode Pembayaran: ${paymentMethod}`;
+            orderDetails += `\n\n_Catatan: Biaya kirim akan dikonfirmasi via WA._`;
+
+            const waNumber = "6281312545499"; 
+            const message = encodeURIComponent(orderDetails);
+            const waLink = `https://wa.me/${waNumber}?text=${message}`;
+
+            window.open(waLink, '_blank');
+            
+            setTimeout(() => {
+                if(confirm("Apakah Anda ingin mengosongkan keranjang setelah mengirim pesanan ke WhatsApp?")){
+                    cart = [];
+                    saveCart();
+                    renderCart();
+                    // Di sini seharusnya data pesanan ditambahkan ke LocalStorage/DB untuk dilihat Admin.
+                    alert("Pesanan berhasil dikirim ke WhatsApp. Kami akan segera menghubungi Anda!");
+                }
+            }, 500);
+        });
+
+
+        // --- ADMIN FUNCTIONS ---
+
+        const adminProductList = document.getElementById("admin-products");
+
+        function saveAdminProducts() {
+            localStorage.setItem("products", JSON.stringify(products)); // Simpan ke key produk yang sama
+        }
+
+        window.renderAdminProducts = function() {
+            adminProductList.innerHTML = "";
+            products.forEach((p) => {
+                const item = document.createElement("article");
+                item.classList.add("product");
+                item.innerHTML = `
+                    <div class="thumb">
+                        <img src="${p.image}" alt="${p.name}">
+                    </div>
+                    <div class="pinfo">
+                        <h3>${p.name}</h3>
+                        <div class="meta">Rp ${p.price.toLocaleString('id-ID')} / ${p.unit} • Stok ${p.stock}</div>
+                        <div class="paction">
+                            <button class="btn-admin" onclick="editProduct(${p.id})">Edit</button>
+                            <button class="btn-admin delete" onclick="deleteProduct(${p.id})">Hapus</button>
+                        </div>
+                    </div>
+                `;
+                adminProductList.appendChild(item);
+            });
+        }
+
+        window.addProduct = function() {
+            const name = prompt("Nama produk:");
+            const price = parseInt(prompt("Harga produk (angka):"));
+            const stock = parseInt(prompt("Stok produk (angka):"));
+            const unit = prompt("Satuan (kg/ikat/bungkus):");
+            const image = prompt("Link gambar produk (URL):");
+
+            if (name && !isNaN(price) && !isNaN(stock) && unit && image) {
+                const newProduct = {
+                    id: Date.now(),
+                    name, price, stock, unit, image
+                };
+                products.push(newProduct);
+                saveAdminProducts();
+                renderAdminProducts();
+            } else {
+                alert("Input tidak valid. Pastikan Harga dan Stok adalah angka.");
+            }
+        }
+
+        window.editProduct = function(id) {
+            const p = products.find((prod) => prod.id === id);
+            if (!p) return;
+
+            p.name = prompt("Nama produk:", p.name) || p.name;
+            p.price = parseInt(prompt("Harga:", p.price)) || p.price;
+            p.stock = parseInt(prompt("Stok:", p.stock)) || p.stock;
+            p.unit = prompt("Satuan:", p.unit) || p.unit;
+            p.image = prompt("Link gambar:", p.image) || p.image;
+
+            saveAdminProducts();
+            renderAdminProducts();
+        }
+
+        window.deleteProduct = function(id) {
+            if (confirm("Yakin ingin menghapus produk ini?")) {
+                products = products.filter((p) => p.id !== id);
+                saveAdminProducts();
+                renderAdminProducts();
+            }
+        }
+
+        window.updateOrderStatus = function(id, newStatus) {
+            const itemElement = document.querySelector(`.order-item[data-id="${id}"]`);
+            if (!itemElement) return;
+
+            itemElement.querySelector('.order-status').classList.remove('status-baru', 'status-proses', 'status-selesai');
+
+            let statusClass;
+            let statusText;
+            let buttonHTML;
+
+            if (newStatus === 'Proses') {
+                statusClass = 'status-proses';
+                statusText = 'DIPROSES';
+                buttonHTML = `<button class="btn-admin" style="background: var(--accent-admin);" onclick="updateOrderStatus(${id}, 'Selesai')">Selesai</button>`;
+            } else if (newStatus === 'Selesai') {
+                statusClass = 'status-selesai';
+                statusText = 'SELESAI';
+                buttonHTML = `<button class="btn-admin" style="background: var(--primary-admin);" disabled>Selesai</button>`;
+            } else {
+                statusClass = 'status-baru';
+                statusText = 'BARU';
+                buttonHTML = `<button class="btn-admin" style="background: var(--primary-admin);" onclick="updateOrderStatus(${id}, 'Proses')">Proses</button>`;
+            }
+            
+            itemElement.querySelector('.order-status').textContent = statusText;
+            itemElement.querySelector('.order-status').classList.add(statusClass);
+            
+            itemElement.querySelector('.order-actions').innerHTML = buttonHTML + `<button class="btn-admin delete" onclick="deleteOrder(${id})">Hapus</button>`;
+            
+            alert(`Pesanan #${id} diubah status menjadi: ${newStatus}`);
+        }
+
+        window.deleteOrder = function(id) {
+            if (confirm(`Yakin ingin menghapus Pesanan #${id}? Tindakan ini tidak dapat dibatalkan.`)) {
+                const itemElement = document.querySelector(`.order-item[data-id="${id}"]`);
+                if (itemElement) {
+                    itemElement.remove();
+                    alert(`Pesanan #${id} telah dihapus.`);
+                }
+            }
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAuthButton();
+            // Tentukan tampilan awal berdasarkan status login
+            if (sessionStorage.getItem("isAdminLoggedIn") === "true") {
+                setView('admin');
+            } else {
+                setView('customer');
+            }
+        });
+    </script>
+</body>
+</html>

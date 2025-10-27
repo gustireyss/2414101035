@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pemesanan_Sayuran - Rey's Vegetables</title>
+    <style>
+        :root{
+            --bg:#fcf9f9; --card:#274bdc; /* Diubah menjadi putih untuk kartu produk */
+            --accent:#6ce82e; /* Hijau terang */
+            --primary:#080909; /* Biru */
+            --muted:#45df09; /* Abu-abu gelap untuk teks sekunder */
+            --maxw:1100px; --radius:12px;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#0a0101;background:var(--bg)}
+
+        header{background:linear-gradient(90deg,var(--primary),#4a99ed);padding:20px 16px;border-bottom:1px solid var(--primary)}
+        .wrap{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;color:#fff}
+        .brand{display:flex;align-items:center;gap:12px}
+        .logo{width:48px;height:48px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:800;font-size:24px;}
+        h1{font-size:24px;margin:0;color:#fff}
+        .subtitle{color:#eef3f0;font-size:14px}
+        .profile-link{color:#fff;text-decoration:none;font-weight:600;font-size:14px}
+
+        main{max-width:var(--maxw);margin:24px auto;padding:0 16px}
+        .grid{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start;}
+
+        .card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+        .products{display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px;}
+
+        .product{display:flex;gap:16px;align-items:center;padding:15px;border-radius:12px;border:1px solid #eef3f0;background:#fff;box-shadow:0 4px 6px rgba(0,0,0,0.05);}
+        .thumb img{width:80px;height:80px;border-radius:10px;object-fit:cover;border:1px solid #eee;}
+        .pinfo{flex-grow:1;}
+        .pinfo h3{margin:0 0 4px 0;font-size:18px}
+        .meta{color:var(--muted);font-size:14px;}
+        .price{font-weight:700;color:var(--primary);margin-top:4px;}
+        .paction{margin-top:10px;display:flex;gap:8px;align-items:center}
+        .btn{border:none;padding:10px 15px;border-radius:8px;background:var(--accent);color:#0f172a;font-weight:600;cursor:pointer;transition:background 0.2s;}
+        .btn:hover{background:#5acb21;} /* Sedikit lebih gelap saat hover */
+
+        aside h2{margin-top:0;}
+        .cart-empty{color:var(--muted);text-align:center;padding:20px;border:1px dashed #ccc;border-radius:8px;}
+        .cart-items{margin-top:12px;}
+        .cart-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:8px;border:1px solid #eef3f0;margin-bottom:8px;background:#f9f9f9;}
+        .item-info strong{display:block;margin-bottom:2px;}
+        .item-info small{color:var(--muted);font-size:12px;}
+        .item-qty{display:flex;align-items:center;gap:8px;}
+        .qty-btn{background:var(--primary);color:#fff;border:none;width:24px;height:24px;border-radius:4px;cursor:pointer;}
+        .qty-btn.remove{background:#ef4444;}
+        .qty-btn:hover{opacity:0.9;}
+
+        .total{display:flex;flex-direction:column;gap:4px;border-top:1px solid #eee;padding-top:12px;margin-top:12px;}
+        .total-row{display:flex;justify-content:space-between;align-items:center;}
+        .total-row div:last-child{font-weight:700;color:var(--primary);}
+        .total-row .subtitle{color:var(--muted);font-weight:400;}
+
+        form.checkout{display:flex;flex-direction:column;gap:12px;margin-top:20px;padding-top:10px;border-top:1px solid #eee;}
+        input,textarea,select{padding:10px;border-radius:8px;border:1px solid #d1d5db;font-size:14px;width:100%;}
+        button.full{width:100%;padding:12px;border-radius:10px;border:none;background:var(--accent);color:#0f172a;font-weight:700;cursor:pointer;transition:background 0.2s;}
+        button.full:hover{background:#5acb21;}
+
+        footer{max-width:var(--maxw);margin:28px auto;text-align:center;color:#555;font-size:13px;padding:6px;}
+
+        @media (max-width:980px){
+            .grid{grid-template-columns:1fr;}
+            .products{grid-template-columns:repeat(auto-fit, minmax(100%, 1fr));}
+            aside{order:-1; /* Memindahkan keranjang ke atas pada layar kecil */}
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="wrap">
+            <div class="brand">
+    <div><img src="calon bos.jpg" alt="logo Profile" width="90"></div>
+       <div>
+          <h1>Rey's Vegetables</h1>
+          <div class="subtitle">Pasar Cigasong Majalengka</div>
+          <div class="subtitle">081312545499 (Gusti Reyhans)</div>
+        </div>
+            </div>
+            <div>
+                <a href="#" class="profile-link">Tentang Kami</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="grid">
+            <section class="card">
+                <h2>Pilih Sayuran Segar Anda</h2>
+                <p class="meta">Pesan sekarang, kami antar sampai ke rumah! Harga per satuan.</p>
+
+                <div class="products" role="list">
+                    </div>
+            </section>
+
+            <aside class="card">
+                <h2>Keranjang Belanja</h2>
+                <div class="cart-items">
+                    <div class="cart-empty" id="cart-empty-message">Keranjang Anda masih kosong. Yuk, pilih sayuran segar!</div>
+                </div>
+
+                <div class="total">
+                    <div class="total-row">
+                        <div>Subtotal</div>
+                        <div id="subtotal">Rp 0</div>
+                    </div>
+                    <div class="total-row">
+                        <div class="subtitle">Biaya Pengiriman (COD)</div>
+                        <div class="subtitle">Dihitung saat konfirmasi</div>
+                    </div>
+                    <div class="total-row">
+                        <div>Total Estimasi</div>
+                        <div id="grand-total">Rp 0</div>
+                    </div>
+                </div>
+
+                <form class="checkout" aria-label="Form Pemesanan" id="checkout-form">
+                    <p style="font-size:14px; font-weight:600; margin-bottom:0;">Data Pengiriman</p>
+                    <input type="text" id="input-name" placeholder="Nama lengkap" required />
+                    <input type="tel" id="input-phone" placeholder="Nomor HP (WhatsApp)" required />
+                    <textarea id="input-address" placeholder="Alamat pengantaran lengkap" rows="3" required></textarea>
+                    
+                    <select id="input-payment-method">
+                        <option value="COD">Bayar di Tempat (COD)</option>
+                        <option value="Transfer">Transfer Bank (Konfirmasi via WA)</option>
+                    </select>
+                    <button type="submit" class="full" id="checkout-button" disabled>Buat Pemesanan (Rp 0)</button>
+                </form>
+
+                <p style="color:red; font-size:12px; margin-top:15px; text-align:center;">
+                    PERHATIAN: Pemesanan akan dikirim ke WhatsApp kami. Pastikan data Anda benar!
+                </p>
+            </aside>
+        </div>
+    </main>
+
+    <footer>
+        © "Hidup sehat dimulai dari makanan sehat, dan sayur adalah salah satunya".
+    </footer>
+
+    <script>
+        // Data Produk (Gunakan LocalStorage untuk persistensi)
+        let products = JSON.parse(localStorage.getItem("customer_products")) || [
+            { id: 1, name: "Bayam", price: 5000, stock: 50, unit: "ikat", image: "https://pasarsegar.co.id/wp-content/uploads/2020/12/name-222-1.jpg" },
+            { id: 2, name: "Kangkung", price: 4500, stock: 40, unit: "ikat", image: "https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full//96/MTA-10783157/hypermart_daun-kangkung-ikat-150-gr_full01.jpg" },
+            { id: 3, name: "Wortel", price: 8000, stock: 30, unit: "kg", image: "https://balifoodstore.com/10-large_default/wortel-500gr.jpg" },
+            { id: 4, name: "Tempe", price: 6000, stock: 30, unit: "bungkus", image: "https://i0.wp.com/halalmui.org/wp-content/uploads/2022/07/Fermentasi_Media_Padat_dari_Tempe_sampai_Enzim_11zon.jpg?w=1000&ssl=1" }
+        ];
+
+        // Keranjang Belanja
+        let cart = JSON.parse(sessionStorage.getItem("customer_cart")) || [];
+
+        const productList = document.querySelector(".products");
+        const cartItemsContainer = document.querySelector(".cart-items");
+        const subtotalElement = document.getElementById("subtotal");
+        const grandTotalElement = document.getElementById("grand-total");
+        const cartEmptyMessage = document.getElementById("cart-empty-message");
+        const checkoutButton = document.getElementById("checkout-button");
+        const checkoutForm = document.getElementById("checkout-form");
+
+        // Simpan keranjang ke SessionStorage
+        function saveCart() {
+            sessionStorage.setItem("customer_cart", JSON.stringify(cart));
+        }
+
+        // --- FUNGSI UTAMA ---
+
+        // 1. Render Produk
+        function renderProducts() {
+            productList.innerHTML = "";
+            products.forEach((p) => {
+                const item = document.createElement("article");
+                item.classList.add("product");
+                item.innerHTML = `
+                    <div class="thumb">
+                        <img src="${p.image}" alt="${p.name}">
+                    </div>
+                    <div class="pinfo">
+                        <h3>${p.name}</h3>
+                        <div class="meta">Stok: ${p.stock > 0 ? p.stock + ' ' + p.unit : 'Habis'}</div>
+                        <div class="price">Rp ${p.price.toLocaleString('id-ID')} / ${p.unit}</div>
+                        <div class="paction">
+                            <button class="btn" ${p.stock === 0 ? 'disabled' : ''} onclick="addToCart(${p.id})">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+                `;
+                productList.appendChild(item);
+            });
+        }
+
+        // 2. Tambah ke Keranjang
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product || product.stock <= 0) {
+                alert("Stok produk ini sedang kosong!");
+                return;
+            }
+
+            const cartItem = cart.find(item => item.id === productId);
+
+            if (cartItem) {
+                // Periksa stok sebelum menambah
+                if (cartItem.qty < product.stock) {
+                    cartItem.qty++;
+                } else {
+                    alert(`Stok maksimal untuk ${product.name} adalah ${product.stock} ${product.unit}.`);
+                }
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    unit: product.unit,
+                    qty: 1
+                });
+            }
+            saveCart();
+            renderCart();
+        }
+
+        // 3. Update Kuantitas Keranjang
+        function updateCartQty(productId, change) {
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
+
+            if (!cartItem) return;
+
+            cartItem.qty += change;
+
+            if (cartItem.qty > product.stock) {
+                cartItem.qty = product.stock;
+                alert(`Stok maksimal untuk ${product.name} adalah ${product.stock} ${product.unit}.`);
+            } else if (cartItem.qty <= 0) {
+                // Hapus item jika kuantitas <= 0
+                cart = cart.filter(item => item.id !== productId);
+            }
+
+            saveCart();
+            renderCart();
+        }
+
+        // 4. Render Keranjang
+        function renderCart() {
+            cartItemsContainer.innerHTML = "";
+            let subtotal = 0;
+
+            if (cart.length === 0) {
+                cartEmptyMessage.style.display = 'block';
+                checkoutButton.disabled = true;
+                checkoutButton.textContent = `Buat Pemesanan (Rp 0)`;
+            } else {
+                cartEmptyMessage.style.display = 'none';
+                checkoutButton.disabled = false;
+            }
+
+            cart.forEach((item) => {
+                const totalItemPrice = item.price * item.qty;
+                subtotal += totalItemPrice;
+
+                const itemDiv = document.createElement("div");
+                itemDiv.classList.add("cart-item");
+                itemDiv.innerHTML = `
+                    <div class="item-info">
+                        <strong>${item.name}</strong>
+                        <small>Rp ${item.price.toLocaleString('id-ID')} / ${item.unit}</small>
+                        <small>Total: Rp ${totalItemPrice.toLocaleString('id-ID')}</small>
+                    </div>
+                    <div class="item-qty">
+                        <button class="qty-btn remove" onclick="updateCartQty(${item.id}, -1)">-</button>
+                        <span>${item.qty} ${item.unit}</span>
+                        <button class="qty-btn" onclick="updateCartQty(${item.id}, 1)">+</button>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(itemDiv);
+            });
+
+            // Update Total
+            subtotalElement.textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
+            grandTotalElement.textContent = `Rp ${subtotal.toLocaleString('id-ID')}`; // Biaya kirim dihitung manual
+            checkoutButton.textContent = `Buat Pemesanan (Rp ${subtotal.toLocaleString('id-ID')})`;
+        }
+
+        // 5. Proses Checkout (Kirim ke WhatsApp)
+        checkoutForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (cart.length === 0) {
+                alert("Keranjang belanja Anda kosong!");
+                return;
+            }
+
+            const name = document.getElementById('input-name').value.trim();
+            const phone = document.getElementById('input-phone').value.trim();
+            const address = document.getElementById('input-address').value.trim();
+            const paymentMethod = document.getElementById('input-payment-method').value;
+
+            if (!name || !phone || !address) {
+                alert("Mohon lengkapi semua data pemesanan: Nama, Nomor HP, dan Alamat.");
+                return;
+            }
+
+            let orderDetails = "Halo Rey's Vegetables, saya ingin memesan:\n\n";
+            let totalOrder = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.qty;
+                totalOrder += itemTotal;
+                orderDetails += `- *${item.name}*: ${item.qty} ${item.unit} (Rp ${itemTotal.toLocaleString('id-ID')})\n`;
+            });
+
+            orderDetails += `\n*TOTAL PESANAN:* Rp ${totalOrder.toLocaleString('id-ID')}`;
+            orderDetails += `\n\n*DATA PENGIRIMAN:*\n`;
+            orderDetails += `Nama: ${name}\n`;
+            orderDetails += `HP: ${phone}\n`;
+            orderDetails += `Alamat: ${address}\n`;
+            orderDetails += `Metode Pembayaran: ${paymentMethod}`;
+            orderDetails += `\n\n_Catatan: Biaya kirim akan dikonfirmasi via WA._`;
+
+            // Bersihkan format nomor HP untuk URL (hanya angka)
+            const waNumber = "6281312545499"; // Nomor WhatsApp tujuan
+            const message = encodeURIComponent(orderDetails);
+            const waLink = `https://wa.me/${waNumber}?text=${message}`;
+
+            window.open(waLink, '_blank');
+            
+            // Opsional: Reset keranjang setelah pemesanan dikirim
+            setTimeout(() => {
+                if(confirm("Apakah Anda ingin mengosongkan keranjang setelah mengirim pesanan ke WhatsApp?")){
+                    cart = [];
+                    saveCart();
+                    renderCart();
+                    alert("Pesanan berhasil dikirim ke WhatsApp. Kami akan segera menghubungi Anda!");
+                }
+            }, 500);
+        });
+
+
+        // Inisialisasi
+        renderProducts();
+        renderCart();
+    </script>
+</body>
+</html>
